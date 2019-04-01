@@ -7,6 +7,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Date;
+import java.util.UUID;
+
 /**
  * Created by jt on 1/20/16.
  */
@@ -24,6 +27,7 @@ public class ProductController {
     public String getProductById(@PathVariable Integer id, Model model){
 
         model.addAttribute("product", productService.getProduct(id));
+
 
         return "product";
     }

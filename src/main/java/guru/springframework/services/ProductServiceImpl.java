@@ -18,13 +18,16 @@ import java.util.Map;
 public class ProductServiceImpl implements ProductService {
 
     private Map<Integer, Product> productMap;
+    private SendTextMessageService sendTextMessageService;
 
-    public ProductServiceImpl() {
+    public ProductServiceImpl(SendTextMessageService sendTextMessageService) {
+    	this.sendTextMessageService = sendTextMessageService;
         loadProducts();
     }
 
     @Override
     public Product getProduct(Integer id) {
+    	sendTextMessageService.sendTextMessage("clicked on "+productMap.get(id).getCourseName());
         return productMap.get(id);
     }
 
