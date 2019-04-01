@@ -1,24 +1,26 @@
 package guru.springframework.services;
 
-import org.springframework.jms.core.JmsTemplate;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.jms.Queue;
 
 @Component
 public class SendTextMessageServiceImpl implements SendTextMessageService {
 
+	private static final String EXCHANGE = "app-exchange";
+	private static final String ROUTING_KEY = "app-routing-key";
 	private Queue textMessageQueue;
-	private JmsTemplate jmsTemplate;
+	private RabbitTemplate rabbitTemplate;
 
-	public SendTextMessageServiceImpl(Queue textMessageQueue, JmsTemplate jmsTemplate) {
+	public SendTextMessageServiceImpl(Queue textMessageQueue, RabbitTemplate rabbitTemplate) {
 		this.textMessageQueue = textMessageQueue;
-		this.jmsTemplate = jmsTemplate;
+		this.rabbitTemplate = rabbitTemplate;
 	}
-
 
 	@Override
 	public void sendTextMessage(String msg) {
-		this.jmsTemplate.convertAndSend(this.textMessageQueue, msg);
+		this.rabbitTemplate.convertAndSend(EXCHANGE, ROUTING_KEY, msg);
+		System.out.println("##################Sending the message " + msg);
 	}
 }

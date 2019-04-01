@@ -1,21 +1,29 @@
 package guru.springframework.services.jms;
 
-import org.springframework.jms.annotation.JmsListener;
-import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class TextMessageListner {
 
-	@JmsListener(destination = "text.messagequeue")
-	public void onMessage(String msg){
-		System.out.println("####################################");
-		System.out.println("####################################");
-		System.out.println("####################################");
-		System.out.println("I GOT A MESSAGE");
-		System.out.println(msg);
-		System.out.println("####################################");
-		System.out.println("####################################");
-		System.out.println("####################################");
+
+	private static final Logger log = LoggerFactory.getLogger(TextMessageListner.class);
+
+
+	@RabbitListener(queues = "app-queue")
+	public void receiveMessageForApp2(String reqObj) {
+		System.out.println("#########################################################");
+		System.out.println("#########################################################");
+		System.out.println("#########################################################");
+		System.out.println("########################GOT A MESSAGE####################");
+		System.out.println(reqObj);
+		System.out.println("#########################################################");
+		System.out.println("#########################################################");
+		System.out.println("#########################################################");
+
 
 	}
+
 }
