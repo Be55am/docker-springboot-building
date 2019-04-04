@@ -80,10 +80,27 @@
 					<verbose>true</verbose>
 					<!--configuring the images-->
 					<images>
+						<!--rabbit mq image-->
+						<image>
+							<name>rabbitmq</name>
+							<alias>rabbitmq</alias>
+							<run>
+								<ports>
+									<port>5671</port>
+									<port>5672</port>
+									<port>4369</port>
+									<port>25672</port>
+								</ports>
+								<!--wait for db to start-->
+								<wait>
+									<time>10000</time>
+								</wait>
+							</run>
+						</image>
 						<image>
 							<name>${docker.image.prefix}/${docker.image.name}</name>
 							<build>
-								<dockerFileDir>${project.basedir}/src/main/docker/</dockerFileDir>
+								<dockerFileDir>${project.basedir}/target/dockerfile/</dockerFileDir>
 
 								<!--copies ur build artifacts the target directory-->
 								<assembly>
@@ -99,10 +116,48 @@
 								<ports>
 									<port>8080:8080</port>
 								</ports>
+								<links>
+									<link>rabbitmq:rabbitmq</link>
+								</links>
+								<env>
+									<SPRING_RABBITMQ_HOST>rabbitmq</SPRING_RABBITMQ_HOST>
+								</env>
+
+								<dependsOn>
+									<container>rabbitmq</container>
+								</dependsOn>
+								<!--this one waits for the container to start and be ready-->
+								<!--<wait>-->
+									<!--<http>-->
+										<!--<url>http://localhost:8080/health</url>-->
+										<!--<method>GET</method>-->
+										<!--<status>200..399</status>-->
+									<!--</http>-->
+									<!--<time>75000</time>-->
+								<!--</wait>-->
 							</run>
 						</image>
 					</images>
 				</configuration>
+				<executions>
+					<!--these are two goals that runs befor and after the integration tests-->
+					<execution>
+						<id>start</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<!--build should be used to build the image-->
+							<goal>build</goal>
+							<goal>start</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>stop</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>stop</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.gmavenplus</groupId>
@@ -130,6 +185,23 @@
 						<scope>runtime</scope>
 					</dependency>
 				</dependencies>
+			</plugin>
+
+			<!--The failsafe plugin for the tests-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.19.1</version>
+				<executions>
+					<!--a goal to run the it tests -->
+					<execution>
+						<id>integration-test</id>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
