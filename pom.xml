@@ -24,7 +24,7 @@
 		<!--Set this to your docker account name-->
 		<docker.image.prefix>bessam</docker.image.prefix>
 		<!--Set the name of the project-->
-		<docker.image.name>springbootdocker</docker.image.name>
+		<docker.image.name>springbootdockertest</docker.image.name>
 	</properties>
 
 	<dependencies>
@@ -98,6 +98,7 @@
 							</run>
 						</image>
 						<image>
+							<!--here v in docker image prefix u can put the url to what u are publishing to-->
 							<name>${docker.image.prefix}/${docker.image.name}</name>
 							<build>
 								<dockerFileDir>${project.basedir}/target/dockerfile/</dockerFileDir>
